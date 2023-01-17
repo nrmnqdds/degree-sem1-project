@@ -1,6 +1,7 @@
 #include <iostream>
 #include <conio.h>
 #include <string>
+#include <iomanip>
 
 using namespace std;
 
@@ -9,7 +10,8 @@ void printCharacter();
 void printScene(string);
 void printDrive();
 void Continue();
-void GoRestaurant();
+void GoRestaurant(string);
+double calorieCounter(int);
 
 class Player{
 	
@@ -69,33 +71,76 @@ int main(){
 	system("cls");
 	printScene(player.getname());
 	
-	cout << "(1) Go to restaurant" << endl << "(2) Workout" << endl << "(3) Commit Suicide" << endl << endl;
-	cout << "Now what you wanna do => ";
-	cin >> choice;
-	switch(choice){
-		case 1:
-			system("cls");
-			GoRestaurant(); break;
-		case 2:
-			break;
-		case 3:
-			break;
-	}
+	do{
+		cout << "(1) Go to restaurant" << endl << "(2) Workout" << endl << "(3) Commit Suicide" << endl << endl;
+		cout << "Now what you wanna do => ";
+		cin >> choice;
+		switch(choice){
+			case 1:
+				system("cls");
+				GoRestaurant(player.getname()); break;
+			case 2:
+				break;
+			case 3:
+				break;
+		}
+	}while(choice!=4);
+	
 	
 	
 	
 	return 0;
 }
 
-void GoRestaurant(){
+void GoRestaurant(string name){
 	
-	double money;
+	string drinkname[11] = {"sky juice", "milo kaw", "kopi luak", "dolce latte", "java frappe", "nescafe", "triple mango", "peach tea", "xtrajoss", "macchiato", "cream mocha"};
+	double drinkprice[11][2] = {{0, 0.3}, {15, 30}, {30, 35}, {15, 20}, {30, 35}, {2, 2.5}, {15, 20}, {15, 20}, {3, 3.5}, {15, 20}, {15, 20}};
+	string foodname[8] = {"roti canai", "nasi lemak", "dim sum", "kaya toast", "chinese fried rice", "mamak fried rice", "pataya fried rice", "fried noodle"};
+	double foodprice[8] = {1, 3, 10, 5, 10, 10, 10, 10};
+	
+	int i, j;
+	double money, price=0;
+	string order, hc;
 	
 	printDrive();
 	DisplayMenu();
 	
-	cout << "How much money do you have in your bank right now? => ";
+	cout << "How much money do you have in your bank right now? => RM";
 	cin >> money;
+	
+	cout << endl << "Anne: Drink?" << endl;
+	cout << name << ": Give me => ";
+	cin.ignore();
+	getline(cin, order);
+	for(int x=0; x<11; x++){
+		if(order==drinkname[x]){
+			i=x;
+		}
+	}
+	
+	cout << endl << "Anne: Hot or cold?" << endl;
+	cout << name << ": ";
+	cin >> hc;
+	if(hc=="hot"){
+		j = 0;
+	}else{
+		j = 1;
+	}
+	
+	price+=drinkprice[i][j];
+	
+	cout << endl << "Anne: Eat?" << endl;
+	cout << name << ": Give me => ";
+	cin.ignore();
+	getline(cin, order);
+	for(int i=0; i<8; i++){
+		if(order==foodname[i]){
+			price+=foodprice[i];
+		}
+	}
+	
+	cout << "Price: RM" << fixed << setprecision(2) << price << endl;
 	
 }
 
@@ -111,12 +156,12 @@ void DisplayMenu(){
 	cout << "|  DIM SUM            | RM10.00 |  KOPI LUAK     | RM30.00   RM35.00 |" << endl;
 	cout << "|  KAYA TOAST         | RM 5.00 |  DOLCE LATTE   | RM15.00   RM20.00 |" << endl;
 	cout << "+---------------------+---------+  JAVA FRAPPE   | RM30.00   RM35.00 |" << endl;
-	cout << "|             LUNCH             |  NESCAFE       |                   |" << endl;
-	cout << "+---------------------+---------+  TRIPLE MANGO  |                   |" << endl;
-	cout << "|  CHINESE FRIED RICE | RM10.00 |  PEACH TEA     |                   |" << endl;
-	cout << "|  MAMAK FRIED RICE   | RM10.00 |  XTRAJOSS      |                   |" << endl;
-	cout << "|  PATAYA FRIED RICE  | RM10.00 |  MACCHIATO     |                   |" << endl;
-	cout << "|  FRIED NOODLE       | RM10.00 |  CREAM MOCHA   |                   |" << endl;
+	cout << "|             LUNCH             |  NESCAFE       | RM 2.00   RM 2.50 |" << endl;
+	cout << "+---------------------+---------+  TRIPLE MANGO  | RM15.00   RM20.00 |" << endl;
+	cout << "|  CHINESE FRIED RICE | RM10.00 |  PEACH TEA     | RM15.00   RM20.00 |" << endl;
+	cout << "|  MAMAK FRIED RICE   | RM10.00 |  XTRAJOSS      | RM 3.00   RM 3.50 |" << endl;
+	cout << "|  PATAYA FRIED RICE  | RM10.00 |  MACCHIATO     | RM15.00   RM20.00 |" << endl;
+	cout << "|  FRIED NOODLE       | RM10.00 |  CREAM MOCHA   | RM15.00   RM20.00 |" << endl;
 	cout << "|                     |         |                |                   |" << endl;
 	cout << "+---------------------+---------+----------------+-------------------+" << endl << endl;
 	
@@ -168,7 +213,7 @@ void printDrive(){
 
 	cout << "Le you driving to the restaurant..." << endl;
 	cout << "You parked and take a seat..." << endl;
-	cout << "The waiter gives you the menu" << endl << endl;
+	cout << "The waiter gives you the menu..." << endl << endl;
 	Continue();
 	system("cls");
 	
