@@ -9,9 +9,11 @@ void DisplayMenu();
 void printCharacter();
 void printScene(string);
 void printDrive();
+void printDrive2();
 void Continue();
-void GoRestaurant(string);
-double calorieCounter(int);
+void GoRestaurant(string, double*);
+void GoWorkout();
+//double calorieCounter(int);
 
 class Player{
 	
@@ -42,14 +44,21 @@ class Player{
 		
 		void setage(int a){age = a;}
 		int getage(){return age;}
-		
+
+		double calorieNeeds(double, double, int);
 	
 };
+
+//1000cal=1kcal,, 1kcal=1C
+
+double Player::calorieNeeds(double height, double weight, int age){
+	return 66.5+(13.75*weight)+(5.003*height)-(6.75*age);
+}
 
 int main(){
 	
 	int age, choice;
-	double height, weight;
+	double height, weight, calorie;
 	string name;
 	
 	cout << endl << "-----CREATE YOUR CHARACTER-----" << endl << endl;
@@ -64,9 +73,11 @@ int main(){
 	cin >> weight;
 	
 	Player player(name, age, height, weight);
+	calorie = player.calorieNeeds(player.getheight(), player.getweight(), player.getage());
 	
 	printCharacter();	
-	cout << "Your character has finished!" << endl << endl;
+	cout << "Your character has finished!" << endl;
+	cout << "You need to fulfill " << calorie << " kcal/day in your activities. Lets's go!" << endl << endl;
 	Continue();
 	system("cls");
 	printScene(player.getname());
@@ -78,70 +89,84 @@ int main(){
 		switch(choice){
 			case 1:
 				system("cls");
-				GoRestaurant(player.getname()); break;
+				GoRestaurant(player.getname(), &calorie); break;
 			case 2:
-				break;
+				system("cls");
+				GoWorkout(); break;
 			case 3:
 				break;
 		}
 	}while(choice!=4);
 	
-	
-	
-	
 	return 0;
 }
 
-void GoRestaurant(string name){
+void GoRestaurant(string name, double *calorie){
 	
-	string drinkname[11] = {"sky juice", "milo kaw", "kopi luak", "dolce latte", "java frappe", "nescafe", "triple mango", "peach tea", "xtrajoss", "macchiato", "cream mocha"};
-	double drinkprice[11][2] = {{0, 0.3}, {15, 30}, {30, 35}, {15, 20}, {30, 35}, {2, 2.5}, {15, 20}, {15, 20}, {3, 3.5}, {15, 20}, {15, 20}};
+	string drinkname[11] = {"sky juice", "milo kaw", "kopi luwak", "xtrajoss", "triple mango", "cappucino", "latte", "mocha", "espresso", "choc coffee", "milk choc"};
+	double drinkcal[11][2] = {{0, 8}, {135, 143}, {50, 58}, {0, 8}, {126, 134}, {130, 138}, {206, 214}, {394, 402}, {309, 317}, {86, 94}, {152, 160}};
 	string foodname[8] = {"roti canai", "nasi lemak", "dim sum", "kaya toast", "chinese fried rice", "mamak fried rice", "pataya fried rice", "fried noodle"};
-	double foodprice[8] = {1, 3, 10, 5, 10, 10, 10, 10};
+	double foodcal[8] = {301, 400, 900, 448, 163, 1362.1, 1597, 460};
 	
 	int i, j;
-	double money, price=0;
-	string order, hc;
+	double calorieintake=0;
+	string order, hc, yn;
 	
 	printDrive();
 	DisplayMenu();
 	
-	cout << "How much money do you have in your bank right now? => RM";
-	cin >> money;
-	
-	cout << endl << "Anne: Drink?" << endl;
-	cout << name << ": Give me => ";
-	cin.ignore();
-	getline(cin, order);
-	for(int x=0; x<11; x++){
-		if(order==drinkname[x]){
-			i=x;
+	do{
+		cout << endl << "Anne: Drink?" << endl;
+		cout << name << ": Give me => ";
+		cin.ignore();
+		getline(cin, order);
+		for(int x=0; x<11; x++){
+			if(order==drinkname[x]){
+				i=x;
+			}
 		}
-	}
+		
+		cout << "Anne: Hot or cold?" << endl;
+		cout << name << ": ";
+		cin >> hc;
+		if(hc=="hot"){
+			j = 0;
+		}else{
+			j = 1;
+		}
+		
+		calorieintake+=drinkcal[i][j];
+		
+		cout << "Anne: Anything else?(y/n)" << endl;
+		cout << name << ": ";
+		cin >> yn;
+	}while(yn == "y");
 	
-	cout << endl << "Anne: Hot or cold?" << endl;
-	cout << name << ": ";
-	cin >> hc;
-	if(hc=="hot"){
-		j = 0;
+	do{
+		cout << endl << "Anne: Eat?" << endl;
+		cout << name << ": Give me => ";
+		cin.ignore();
+		getline(cin, order);
+		for(int i=0; i<8; i++){
+			if(order==foodname[i]){
+				calorieintake+=foodcal[i];
+			}
+		}
+		
+		cout << "Anne: Anything else?(y/n)" << endl;
+		cout << name << ": ";
+		cin >> yn;	
+	}while(yn == "y");
+	
+	cout << endl << "Calorie intake: " << calorieintake << endl;
+	if(calorieintake<*calorie){
+		cout << "You need " << *calorie-calorieintake << " more!" << endl;
 	}else{
-		j = 1;
+		cout << "You have exceeded by " << calorieintake-*calorie << "! Enought calorie for today!" << endl;
 	}
 	
-	price+=drinkprice[i][j];
-	
-	cout << endl << "Anne: Eat?" << endl;
-	cout << name << ": Give me => ";
-	cin.ignore();
-	getline(cin, order);
-	for(int i=0; i<8; i++){
-		if(order==foodname[i]){
-			price+=foodprice[i];
-		}
-	}
-	
-	cout << "Price: RM" << fixed << setprecision(2) << price << endl;
-	
+	Continue();
+	system("cls");
 }
 
 void DisplayMenu(){
@@ -151,17 +176,17 @@ void DisplayMenu(){
 	cout << "+-------------------------------+----------------+-------------------+" << endl;
 	cout << "|            BREAKFAST          |    BEVERAGES   |   HOT       COLD  |" << endl;
 	cout << "+---------------------+---------+----------------+-------------------+" << endl;
-	cout << "|  ROTI CANAI         | RM 1.00 |  SKY JUICE     | FREE      RM00.30 |" << endl;
-	cout << "|  NASI LEMAK         | RM 3.00 |  MILO KAW      | RM15.00   RM30.00 |" << endl;
-	cout << "|  DIM SUM            | RM10.00 |  KOPI LUAK     | RM30.00   RM35.00 |" << endl;
-	cout << "|  KAYA TOAST         | RM 5.00 |  DOLCE LATTE   | RM15.00   RM20.00 |" << endl;
-	cout << "+---------------------+---------+  JAVA FRAPPE   | RM30.00   RM35.00 |" << endl;
-	cout << "|             LUNCH             |  NESCAFE       | RM 2.00   RM 2.50 |" << endl;
-	cout << "+---------------------+---------+  TRIPLE MANGO  | RM15.00   RM20.00 |" << endl;
-	cout << "|  CHINESE FRIED RICE | RM10.00 |  PEACH TEA     | RM15.00   RM20.00 |" << endl;
-	cout << "|  MAMAK FRIED RICE   | RM10.00 |  XTRAJOSS      | RM 3.00   RM 3.50 |" << endl;
-	cout << "|  PATAYA FRIED RICE  | RM10.00 |  MACCHIATO     | RM15.00   RM20.00 |" << endl;
-	cout << "|  FRIED NOODLE       | RM10.00 |  CREAM MOCHA   | RM15.00   RM20.00 |" << endl;
+	cout << "|  ROTI CANAI         | 301kcal |  SKY JUICE     |   0kcal     8kcal |" << endl;
+	cout << "|  NASI LEMAK         | 400kcal |  MILO KAW      | 135kcal   143kcal |" << endl;
+	cout << "|  DIM SUM            | 900kcal |  KOPI LUWAK    |  50kcal    58kcal |" << endl;
+	cout << "|  KAYA TOAST         | 448kcal |  XTRAJOSS      |   0kcal     8kcal |" << endl;
+	cout << "+---------------------+---------+  TRIPLE MANGO  | 126kcal   134kcal |" << endl;
+	cout << "|             LUNCH             |  CAPPUCINO     | 130kcal   138kcal |" << endl;
+	cout << "+---------------------+---------+  LATTE         | 206kcal   214kcal |" << endl;
+	cout << "|  CHINESE FRIED RICE | 163kcal |  MOCHA         | 394kcal   402kcal |" << endl;
+	cout << "|  MAMAK FRIED RICE   | 1.3kCal |  ESPRESSO      | 309kcal   317kcal |" << endl;
+	cout << "|  PATAYA FRIED RICE  | 1.6kCal |  CHOC COFFEE   |  86kcal    94kcal |" << endl;
+	cout << "|  FRIED NOODLE       | 460kcal |  MILK CHOC     | 152kcal   160kcal |" << endl;
 	cout << "|                     |         |                |                   |" << endl;
 	cout << "+---------------------+---------+----------------+-------------------+" << endl << endl;
 	
@@ -219,6 +244,34 @@ void printDrive(){
 	
 }
 
+void printDrive2(){
+	
+	cout << endl << endl;
+	cout << "   __o            __o  <-You       __o            __o            __o " << endl;
+	cout << " _`\\<,_         _`\\<,_         _`\\<,_         _`\\<,_         _`\\<,_" << endl;
+	cout << "(_)/ (_)       (_)/ (_)       (_)/ (_)       (_)/ (_)       (_)/ (_)" << endl;
+	cout << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" << endl << endl;
+
+	cout << "Le you cycling to gym..." << endl << endl;
+	Continue();
+	system("cls");
+	
+}
+
+void GoWorkout(){
+
+	int choice;
+	
+	printDrive2();
+	
+	cout << "What you wanna do?" << endl << "(1) Workout" << endl << "(2) Sport" << endl;
+	cout << "=> ";
+	cin >> choice;
+	
+	
+	
+}
+
 void Continue(){
 	
 	cout << "Press any key to continue..." << endl;
@@ -244,6 +297,10 @@ void Continue(){
 //        |||||                    __/
 //,,,,,,,//||||\,,,,,,,,,,,,,,,,,,o==o
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+
 
 
 
