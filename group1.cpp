@@ -8,12 +8,12 @@ using namespace std;
 void DisplayMenu();
 void printCharacter();
 void printScene(string);
-void printDrive();
-void printDrive2();
+void printart(int);
 void Continue();
-void GoRestaurant(string, double*);
-void GoWorkout();
-//double calorieCounter(int);
+double GoRestaurant(string, double*);
+double GoGym(double*);
+double Workout();
+double Sport();
 
 class Player{
 	
@@ -31,7 +31,10 @@ class Player{
 			age = a;
 		}
 		
-		~Player(){cout << "Character died xoxo" << endl;}
+		~Player(){
+			cout << endl << "Program terminated" << endl;
+			cout << "Character died xoxo" << endl;
+		}
 		
 		void setheight(double h){height = h;}
 		double getheight(){return height;}
@@ -49,8 +52,6 @@ class Player{
 	
 };
 
-//1000cal=1kcal,, 1kcal=1C
-
 double Player::calorieNeeds(double height, double weight, int age){
 	return 66.5+(13.75*weight)+(5.003*height)-(6.75*age);
 }
@@ -58,18 +59,20 @@ double Player::calorieNeeds(double height, double weight, int age){
 int main(){
 	
 	int age, choice;
-	double height, weight, calorie;
+	double height, weight, calorie, intake=0, burned=0, currentcalorie=0;
 	string name;
 	
-	cout << endl << "-----CREATE YOUR CHARACTER-----" << endl << endl;
+	cout << setw(70) << "\\\\-----WELCOME TO CALORIE COUNTER SIMULATOR!-----//" << endl << endl;
+	cout << setw(60) << "The purpose of this program is to calculate calorie intake based on daily activity. Use at your own risk." << endl;
+	cout << setw(60) << endl << "-----CREATE YOUR CHARACTER-----" << endl;
 	
-	cout << "Player name: ";
+	cout << setw(45) << "Player name: ";
 	getline(cin, name);
-	cout << "Player age: ";
+	cout << setw(45) << "Player age: ";
 	cin >> age;
-	cout << "Enter height(cm): ";
+	cout << setw(45) << "Enter height(cm): ";
 	cin >> height;
-	cout << "Enter weight(kg): ";
+	cout << setw(45) << "Enter weight(kg): ";
 	cin >> weight;
 	
 	Player player(name, age, height, weight);
@@ -79,29 +82,34 @@ int main(){
 	cout << "Your character has finished!" << endl;
 	cout << "You need to fulfill " << calorie << " kcal/day in your activities. Lets's go!" << endl << endl;
 	Continue();
-	system("cls");
-	printScene(player.getname());
 	
 	do{
-		cout << "(1) Go to restaurant" << endl << "(2) Workout" << endl << "(3) Commit Suicide" << endl << endl;
+		system("cls");
+		printScene(player.getname());
+		
+		cout << "Ideal calorie: " << calorie << "kcal!" << endl;
+		cout << "Current calorie: " << currentcalorie << "kcal!" << endl << endl;
+		cout << "(1) Go to restaurant" << endl << "(2) Go to gym" << endl << "(3) Terminate Program" << endl << endl;
 		cout << "Now what you wanna do => ";
 		cin >> choice;
 		switch(choice){
 			case 1:
 				system("cls");
-				GoRestaurant(player.getname(), &calorie); break;
+				intake+=GoRestaurant(player.getname(), &calorie);
+				currentcalorie+=intake; break;
 			case 2:
 				system("cls");
-				GoWorkout(); break;
-			case 3:
+				burned-=GoGym(&calorie);
+				currentcalorie-=burned; break;
+			default:
 				break;
 		}
-	}while(choice!=4);
+	}while(choice!=3);
 	
 	return 0;
 }
 
-void GoRestaurant(string name, double *calorie){
+double GoRestaurant(string name, double *calorie){
 	
 	string drinkname[11] = {"sky juice", "milo kaw", "kopi luwak", "xtrajoss", "triple mango", "cappucino", "latte", "mocha", "espresso", "choc coffee", "milk choc"};
 	double drinkcal[11][2] = {{0, 8}, {135, 143}, {50, 58}, {0, 8}, {126, 134}, {130, 138}, {206, 214}, {394, 402}, {309, 317}, {86, 94}, {152, 160}};
@@ -112,7 +120,7 @@ void GoRestaurant(string name, double *calorie){
 	double calorieintake=0;
 	string order, hc, yn;
 	
-	printDrive();
+	printart(1);
 	DisplayMenu();
 	
 	do{
@@ -158,15 +166,68 @@ void GoRestaurant(string name, double *calorie){
 		cin >> yn;	
 	}while(yn == "y");
 	
-	cout << endl << "Calorie intake: " << calorieintake << endl;
+	cout << endl << "Calorie intake: " << calorieintake << "kcal" << endl;
 	if(calorieintake<*calorie){
-		cout << "You need " << *calorie-calorieintake << " more!" << endl;
+		cout << "You need " << *calorie-calorieintake << " more!" << endl << endl;
 	}else{
-		cout << "You have exceeded by " << calorieintake-*calorie << "! Enought calorie for today!" << endl;
+		cout << "You have exceeded by " << calorieintake-*calorie << "! Enought calorie for today!" << endl << endl;
 	}
 	
 	Continue();
-	system("cls");
+	return calorieintake;
+}
+
+double GoGym(double *calorie){
+
+	int choice;
+	double burned;
+	
+	printart(2);
+	
+	cout << "What you wanna do?" << endl << "(1) Workout" << endl << "(2) Sport" << endl;
+	cout << "=> ";
+	cin >> choice;
+	
+	switch(choice){
+		case 1:
+			burned = Workout(); break;
+		case 2:
+			burned = Sport(); break;
+	}
+	*calorie-=burned;
+	cout << "You just burned " << burned << "kcal! Good job!" << endl << endl;
+	Continue();
+	
+	return burned;
+}
+
+double Workout(){
+	
+	int hours;
+	
+	printart(3);
+	cout << "How many hours do you workout? => ";
+	cin >> hours;
+	
+	return hours*365;
+}
+
+double Sport(){
+	
+	int hours;
+	
+	printart(4);
+	cout << "How many hours do you play? => ";
+	cin >> hours;
+	
+	return hours*365;
+}
+
+void Continue(){
+	
+	cout << "Press any key to continue..." << endl;
+	getch();
+	
 }
 
 void DisplayMenu(){
@@ -190,7 +251,7 @@ void DisplayMenu(){
 	cout << "|                     |         |                |                   |" << endl;
 	cout << "+---------------------+---------+----------------+-------------------+" << endl << endl;
 	
-	
+	//1000cal=1kcal,, 1kcal=1C
 }
 
 void printCharacter(){
@@ -226,80 +287,60 @@ void printScene(string name){
 	
 }
 
-void printDrive(){
+void printart(int n){
 	
-	cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << endl;
-	cout << "                                _    ," << endl;
-	cout << "__   __   __   __   __   --  -,_/\\\\_~0_\\ ___    __   __   __" << endl;
-	cout << "                      --    /  ___ \\-  `___`+-," << endl;
-	cout << "                    ---    `--( @ )----( @ )---`" << endl;
-	cout << "                               '-'      '-'" << endl;
-	cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << endl << endl;
+	if(n==1){
+		cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << endl;
+		cout << "                                _    ," << endl;
+		cout << "__   __   __   __   __   --  -,_/\\\\_~0_\\ ___    __   __   __" << endl;
+		cout << "                      --    /  ___ \\-  `___`+-," << endl;
+		cout << "                    ---    `--( @ )----( @ )---`" << endl;
+		cout << "                               '-'      '-'" << endl;
+		cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << endl << endl;
+		cout << "Le you driving to the restaurant..." << endl;
+		cout << "You parked and take a seat..." << endl;
+		cout << "The waiter gives you the menu..." << endl << endl;
+		
+		
+	}else if(n==2){
+		cout << endl << endl;
+		cout << "   __o            __o  <-You       __o            __o            __o " << endl;
+		cout << " _`\\<,_         _`\\<,_         _`\\<,_         _`\\<,_         _`\\<,_" << endl;
+		cout << "(_)/ (_)       (_)/ (_)       (_)/ (_)       (_)/ (_)       (_)/ (_)" << endl;
+		cout << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" << endl << endl;
+		cout << "Le you cycling to gym..." << endl << endl;
 
-	cout << "Le you driving to the restaurant..." << endl;
-	cout << "You parked and take a seat..." << endl;
-	cout << "The waiter gives you the menu..." << endl << endl;
+	}else if(n==3){
+		
+		cout << endl << endl;
+		cout << "                                                                 O--,---,--O" << endl;
+		cout << "                                          ._O_.     O--=-O-=--O     \\ O /" << endl;
+		cout << "    _._                      ,_O_,     O--<-+->--O      '-'          - -" << endl;
+		cout << "   / O \\        ,-O-,     O--(---)--O       X            v            -" << endl;
+		cout << "   \\| |/     O--=---=--O      >'>          / \\          / )          / \\" << endl;
+		cout << "O--+=-=+--O      2''2          - -         -   -        ~  z        =   =" << endl << endl;
+		return;
+		
+	}else if(n==4){
+			
+	cout << "		               !###" << endl;
+	cout << "                       ! ###" << endl;
+	cout << "                       !  ###" << endl;
+	cout << "                       !   ###" << endl;
+	cout << "  *   _________________!____###________O_______" << endl;
+	cout << "/            O          \\    ##!     ==||       \\" << endl;
+	cout << "\\O         /||--         \\    #!       //        \\" << endl;
+	cout << "||\\_        \\\\            \\    !      _\\\\   O     \\" << endl;
+	cout << "\\\\           LL            \\   !          ==||     \\" << endl;
+	cout << " LL                         \\  !            //      \\" << endl;
+	cout << "   \\                         \\ !           _\\       \\" << endl;
+	cout << "    \\_________________________\\!______________________\\" << endl;
+	return;
+	}
+	
 	Continue();
 	system("cls");
-	
 }
-
-void printDrive2(){
-	
-	cout << endl << endl;
-	cout << "   __o            __o  <-You       __o            __o            __o " << endl;
-	cout << " _`\\<,_         _`\\<,_         _`\\<,_         _`\\<,_         _`\\<,_" << endl;
-	cout << "(_)/ (_)       (_)/ (_)       (_)/ (_)       (_)/ (_)       (_)/ (_)" << endl;
-	cout << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *" << endl << endl;
-
-	cout << "Le you cycling to gym..." << endl << endl;
-	Continue();
-	system("cls");
-	
-}
-
-void GoWorkout(){
-
-	int choice;
-	
-	printDrive2();
-	
-	cout << "What you wanna do?" << endl << "(1) Workout" << endl << "(2) Sport" << endl;
-	cout << "=> ";
-	cin >> choice;
-	
-	
-	
-}
-
-void Continue(){
-	
-	cout << "Press any key to continue..." << endl;
-	getch();
-	
-}
-
-
-
-
-
-
-
-//      ********
-//  ****************
-//*******************
-//********************
-// ********************
-//    \\   //  ********
-//     \\\//  *******
-//       \\\////
-//        |||//                       ,
-//        |||||                    __/
-//,,,,,,,//||||\,,,,,,,,,,,,,,,,,,o==o
-//;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
 
 
 
